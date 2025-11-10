@@ -50,7 +50,7 @@ with col4:
 
 
 # -----------------------
-# Calculation Function (updated for JPY pairs)
+# ✅ Updated Calculation Function (Accurate JPY Logic)
 # -----------------------
 def calculate_lot_size(entry, sl, risk_amount, pair):
     sl_distance = abs(entry - sl)
@@ -58,20 +58,20 @@ def calculate_lot_size(entry, sl, risk_amount, pair):
     if sl_distance == 0:
         return None, None, None
 
-    # Gold / Silver special handling
+    # ✅ Gold / Silver
     if "XAUUSD" in pair or "XAGUSD" in pair:
-        # For your existing logic: $1 per 0.10 move -> adjust accordingly
-        pip_value_per_lot = 1             # $1 per 0.01 move (kept as your existing assumption)
-        # Your previous code used pip_distance = sl_distance / 0.10 for gold; preserve that behavior
-        pip_distance = sl_distance / 0.10
+        pip_value_per_lot = 1              # $1 per 0.01 move (you requested to keep your logic)
+        pip_distance = sl_distance / 0.10  # $1 = 0.10 distance (kept unchanged)
+
     else:
-        # Determine pip size: JPY pairs use 0.01, others 0.0001
+        # determine pip size
         if "JPY" in pair:
             pip_size = 0.01
+            pip_value_per_lot = (pip_size / entry) * 100000   # ✅ accurate JPY pip value conversion
         else:
             pip_size = 0.0001
+            pip_value_per_lot = 10   # Standard pairs (USD quote)
 
-        pip_value_per_lot = 10            # $10 per pip (your existing assumption for standard pairs)
         pip_distance = sl_distance / pip_size
 
     lot_size = risk_amount / (pip_distance * pip_value_per_lot)
@@ -108,7 +108,7 @@ if st.button("✅ Calculate Lot Size"):
     if lot_size_2 and account2_risk > 0:
         st.info(
             f"**Account 2 Lot Size:** `{lot_size_2:.2f}` lots\n"
-            f"SL Distance: `{pips_2:.1f} pips`\n"
+            f"SL Distance: `{pips_2:.1f}` pips\n"
             f"Risk Amount Used: `{account2_risk:.2f} {account_currency}`"
         )
 
