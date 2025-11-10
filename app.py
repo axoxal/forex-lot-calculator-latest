@@ -10,7 +10,7 @@ st.title("📊 Forex & Gold Lot Size Calculator")
 col1, col2 = st.columns(2)
 
 with col1:
-    account_currency = st.selectbox("Account Currency", ["USD", "INR", "GBP"])   # ✅ GBP added
+    account_currency = st.selectbox("Account Currency", ["USD", "INR", "GBP"])
 
     pair = st.selectbox(
         "Trading Pair",
@@ -25,7 +25,7 @@ with col1:
             "XAGUSD (Silver)", "BTCUSD (Bitcoin)", "ETHUSD (Ethereum)",
             "Custom"
         ]
-    )  # ✅ Added full list of common pairs, metals & crypto
+    )
 
 with col2:
     account_size = st.number_input("Account Size", min_value=1.0, format="%.2f")
@@ -50,7 +50,7 @@ with col4:
 
 
 # -----------------------
-# Calculation Function
+# Calculation Function (updated for JPY pairs)
 # -----------------------
 def calculate_lot_size(entry, sl, risk_amount, pair):
     sl_distance = abs(entry - sl)
@@ -58,12 +58,21 @@ def calculate_lot_size(entry, sl, risk_amount, pair):
     if sl_distance == 0:
         return None, None, None
 
-    if "XAUUSD" in pair:
-        pip_value_per_lot = 1             # $1 per 0.01 move
-        pip_distance = sl_distance / 0.10 # $1 = 0.10 distance
+    # Gold / Silver special handling
+    if "XAUUSD" in pair or "XAGUSD" in pair:
+        # For your existing logic: $1 per 0.10 move -> adjust accordingly
+        pip_value_per_lot = 1             # $1 per 0.01 move (kept as your existing assumption)
+        # Your previous code used pip_distance = sl_distance / 0.10 for gold; preserve that behavior
+        pip_distance = sl_distance / 0.10
     else:
-        pip_value_per_lot = 10            # $10 per pip (standard pairs)
-        pip_distance = sl_distance / 0.0001
+        # Determine pip size: JPY pairs use 0.01, others 0.0001
+        if "JPY" in pair:
+            pip_size = 0.01
+        else:
+            pip_size = 0.0001
+
+        pip_value_per_lot = 10            # $10 per pip (your existing assumption for standard pairs)
+        pip_distance = sl_distance / pip_size
 
     lot_size = risk_amount / (pip_distance * pip_value_per_lot)
 
