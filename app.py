@@ -10,8 +10,22 @@ st.title("📊 Forex & Gold Lot Size Calculator")
 col1, col2 = st.columns(2)
 
 with col1:
-    account_currency = st.selectbox("Account Currency", ["USD", "INR"])
-    pair = st.selectbox("Trading Pair", ["XAUUSD (Gold)", "EURUSD", "GBPUSD", "USDJPY", "US30", "Custom"])
+    account_currency = st.selectbox("Account Currency", ["USD", "INR", "GBP"])   # ✅ GBP added
+
+    pair = st.selectbox(
+        "Trading Pair",
+        [
+            "XAUUSD (Gold)",
+            "EURUSD", "GBPUSD", "USDJPY", "US30",
+            "USDCHF", "AUDUSD", "NZDUSD",
+            "USDCAD", "EURGBP", "EURJPY",
+            "GBPJPY", "GBPCHF", "CADJPY",
+            "AUDJPY", "AUDCAD", "AUDNZD",
+            "NZDJPY", "CHFJPY", "EURCHF",
+            "XAGUSD (Silver)", "BTCUSD (Bitcoin)", "ETHUSD (Ethereum)",
+            "Custom"
+        ]
+    )  # ✅ Added full list of common pairs, metals & crypto
 
 with col2:
     account_size = st.number_input("Account Size", min_value=1.0, format="%.2f")
@@ -29,10 +43,10 @@ st.subheader("💰 Multiple Accounts (Optional)")
 col3, col4 = st.columns(2)
 
 with col3:
-    account1_risk = st.number_input("Risk Amount Account 1 (USD/INR)", min_value=0.0, value=0.0, format="%.2f")
+    account1_risk = st.number_input("Risk Amount Account 1 (USD/INR/GBP)", min_value=0.0, value=0.0, format="%.2f")
 
 with col4:
-    account2_risk = st.number_input("Risk Amount Account 2 (USD/INR)", min_value=0.0, value=0.0, format="%.2f")
+    account2_risk = st.number_input("Risk Amount Account 2 (USD/INR/GBP)", min_value=0.0, value=0.0, format="%.2f")
 
 
 # -----------------------
@@ -44,7 +58,7 @@ def calculate_lot_size(entry, sl, risk_amount, pair):
     if sl_distance == 0:
         return None, None, None
 
-    if pair == "XAUUSD (Gold)":
+    if "XAUUSD" in pair:
         pip_value_per_lot = 1             # $1 per 0.01 move
         pip_distance = sl_distance / 0.10 # $1 = 0.10 distance
     else:
@@ -85,7 +99,7 @@ if st.button("✅ Calculate Lot Size"):
     if lot_size_2 and account2_risk > 0:
         st.info(
             f"**Account 2 Lot Size:** `{lot_size_2:.2f}` lots\n"
-            f"SL Distance: `{pips_2:.1f}` pips\n"
+            f"SL Distance: `{pips_2:.1f} pips`\n"
             f"Risk Amount Used: `{account2_risk:.2f} {account_currency}`"
         )
 
@@ -106,4 +120,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
